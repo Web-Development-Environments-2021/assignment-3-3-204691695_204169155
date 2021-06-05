@@ -79,7 +79,7 @@ export default {
   validations: {
     form: {
       username: {
-        required, 
+        required
       },
       password: {
         required
@@ -93,7 +93,12 @@ export default {
     },
     async Login() {
       try {
-        const response = await this.axios.post(
+        // before sending request to server we are validating the username constraints
+        if(this.form.username.length < 3 || this.form.username.length > 8 || !(/^[a-zA-Z]+$/.test(this.form.username))){
+          this.form.submitError = "Username or Password incorrect"
+        }
+        else{
+          const response = await this.axios.post(
           this.$root.store.server_url+"/Login",
           {
             username: this.form.username,
@@ -105,6 +110,7 @@ export default {
         
         this.$root.store.login(this.form.username);
         this.$router.push("/");
+        }
       } catch (err) {
         console.log(err.response);
         this.form.submitError = err.response.data;

@@ -2,6 +2,7 @@
   <div class="container">
     <h1 class="title">Register</h1>
     <b-form @submit.prevent="onRegister" @reset.prevent="onReset">
+      <!--Username -->
       <b-form-group
         id="input-group-username"
         label-cols-sm="3"
@@ -21,10 +22,93 @@
           Username length should be between 3-8 characters long
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-if="!$v.form.username.alpha">
-          Username alpha
+          Username must contain only english letters
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!--First name -->
+      <b-form-group
+        id="input-group-firstName"
+        label-cols-sm="3"
+        label="First Name:"
+        label-for="firstName"
+      >
+        <b-form-input
+          id="firstName"
+          v-model="$v.form.firstName.$model"
+          type="text"
+          :state="validateState('firstName')"
+        ></b-form-input>
+        <b-form-invalid-feedback v-if="!$v.form.firstName.required">
+          first name is required
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-else-if="!$v.form.firstName.alpha">
+          first name must contain only english letters
+        </b-form-invalid-feedback>
+      </b-form-group>
+
+      <!--Last name -->
+      <b-form-group
+        id="input-group-lastName"
+        label-cols-sm="3"
+        label="Last Name:"
+        label-for="lastName"
+      >
+        <b-form-input
+          id="lastName"
+          v-model="$v.form.lastName.$model"
+          type="text"
+          :state="validateState('lastName')"
+        ></b-form-input>
+        <b-form-invalid-feedback v-if="!$v.form.lastName.required">
+          first name is required
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-else-if="!$v.form.lastName.alpha">
+          first name must contain only english letters
+        </b-form-invalid-feedback>
+      </b-form-group>
+
+      <!--Email -->
+      <b-form-group
+        id="input-group-email"
+        label-cols-sm="3"
+        label="Email:"
+        label-for="email"
+      >
+        <b-form-input
+          id="email"
+          v-model="$v.form.email.$model"
+          type="text"
+          :state="validateState('email')"
+        ></b-form-input>
+        <b-form-invalid-feedback v-if="!$v.form.email.required">
+          Email name is required
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-else-if="!$v.form.email.email">
+          Invalid email
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <!--Profile Pic -->
+      <b-form-group
+        id="input-group-profileImage"
+        label-cols-sm="3"
+        label="Profile Image URL :"
+        label-for="email"
+      >
+        <b-form-input
+          id="profileImage"
+          v-model="$v.form.profileImage.$model"
+          type="text"
+          :state="validateState('profileImage')"
+        ></b-form-input>
+        <b-form-invalid-feedback v-if="!$v.form.profileImage.required">
+          Profile Image is required
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-else-if="!$v.form.profileImage.url">
+          Profile Image must be URL
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <!--Country -->
       <b-form-group
         id="input-group-country"
         label-cols-sm="3"
@@ -40,8 +124,8 @@
         <b-form-invalid-feedback>
           Country is required
         </b-form-invalid-feedback>
-      </b-form-group>
-
+      </b-form-group>      
+      <!--Password -->
       <b-form-group
         id="input-group-Password"
         label-cols-sm="3"
@@ -73,7 +157,7 @@
           v-if="$v.form.password.required && !$v.form.password.specialCase"
         >Have at least one special character ([#?!@$%^*-]))</b-form-invalid-feedback>
       </b-form-group>
-
+      <!--Confirm Password -->
       <b-form-group
         id="input-group-confirmedPassword"
         label-cols-sm="3"
@@ -134,7 +218,8 @@ import {
   alpha,
   sameAs,
   email,
-  helpers
+  helpers,
+  url
 } from "vuelidate/lib/validators";
 const numCase = helpers.regex('numCase',/\d/);
 const specialCase = helpers.regex('specialCase',/^(?=.*[#?!@$%^*-])/);
@@ -150,7 +235,8 @@ export default {
         password: "",
         confirmedPassword: "",
         email: "",
-        submitError: undefined
+        submitError: undefined,
+        profileImage: ""
       },
       countries: [{ value: null, text: "", disabled: true }],
       errors: [],
@@ -164,6 +250,14 @@ export default {
         length: (u) => minLength(3)(u) && maxLength(8)(u),
         alpha
       },
+      firstName: {
+        required,
+        alpha
+      },
+      lastName: {
+        required,
+        alpha
+      },
       country: {
         required
       },
@@ -171,25 +265,25 @@ export default {
         required,
         length: (p) => minLength(5)(p) && maxLength(10)(p),
         numCase,
-        specialCase,
+        specialCase
       },
       confirmedPassword: {
         required,
         sameAsPassword: sameAs("password")
+      },
+      email: {
+        required,
+        email
+      },
+      profileImage: {
+        required,
+        url
       }
-      // email: {
-      //   required,
-      //   email: u => email(u)
-      // },
-      // profileImage: {
-      //   required
-      // }
     }
   },
   mounted() {
     console.log("mounted");
     this.countries.push(...countries);
-    // console.log($v);
   },
   methods: {
     validateState(param) {
@@ -206,19 +300,16 @@ export default {
           }
         );
         this.$router.push("/login");
-        // console.log(response);
       } catch (err) {
         console.log(err.response.data);
         this.form.submitError = err.response.data;
       }
     },
     onRegister() {
-      // console.log("register method called");
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      // console.log("register method go");
       this.Register();
     },
     onReset() {
@@ -229,7 +320,8 @@ export default {
         country: null,
         password: "",
         confirmedPassword: "",
-        email: ""
+        email: "",
+        profileImage: ""
       };
       this.$nextTick(() => {
         this.$v.$reset();
