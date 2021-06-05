@@ -1,5 +1,5 @@
 {
-  "name": "lab12-vue-3",
+  "name": "fullstack-league_mangment",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "build_project": "vue-cli-service build src/main.js"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.0",
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.5",

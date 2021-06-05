@@ -64,8 +64,14 @@
         <b-form-invalid-feedback
           v-if="$v.form.password.required && !$v.form.password.length"
         >
-          Have length between 5-10 characters long
-        </b-form-invalid-feedback>
+          Have length between 5-10 characters long</b-form-invalid-feedback>
+
+        <b-form-invalid-feedback
+          v-if="$v.form.password.required && !$v.form.password.numCase "
+        >Have at least one number</b-form-invalid-feedback>
+        <b-form-invalid-feedback
+          v-if="$v.form.password.required && !$v.form.password.specialCase"
+        >Have at least one special character ([#?!@$%^*-]))</b-form-invalid-feedback>
       </b-form-group>
 
       <b-form-group
@@ -127,9 +133,11 @@ import {
   maxLength,
   alpha,
   sameAs,
-  email
+  email,
+  helpers
 } from "vuelidate/lib/validators";
-
+const numCase = helpers.regex('numCase',/\d/);
+const specialCase = helpers.regex('specialCase',/^(?=.*[#?!@$%^*-])/);
 export default {
   name: "Register",
   data() {
@@ -161,16 +169,25 @@ export default {
       },
       password: {
         required,
-        length: (p) => minLength(5)(p) && maxLength(10)(p)
+        length: (p) => minLength(5)(p) && maxLength(10)(p),
+        numCase,
+        specialCase,
       },
       confirmedPassword: {
         required,
         sameAsPassword: sameAs("password")
       }
+      // email: {
+      //   required,
+      //   email: u => email(u)
+      // },
+      // profileImage: {
+      //   required
+      // }
     }
   },
   mounted() {
-    // console.log("mounted");
+    console.log("mounted");
     this.countries.push(...countries);
     // console.log($v);
   },
@@ -182,7 +199,7 @@ export default {
     async Register() {
       try {
         const response = await this.axios.post(
-          "https://test-for-3-2.herokuapp.com/user/Register",
+           this.$root.store.server_url+"/Register",
           {
             username: this.form.username,
             password: this.form.password
@@ -191,8 +208,8 @@ export default {
         this.$router.push("/login");
         // console.log(response);
       } catch (err) {
-        console.log(err.response);
-        this.form.submitError = err.response.data.message;
+        console.log(err.response.data);
+        this.form.submitError = err.response.data;
       }
     },
     onRegister() {
