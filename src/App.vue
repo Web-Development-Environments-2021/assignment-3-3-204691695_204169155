@@ -1,44 +1,17 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand :to="{ name: 'main' }">Superliga Vue</b-navbar-brand>
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
-
-        <b-nav-item :to="{ name: 'search' }">Search</b-nav-item>
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto" v-if="!$root.store.username">
-          <b-nav-item :to="{ name: 'login' }">Login</b-nav-item>
-          <b-nav-item :to="{ name: 'register' }">Register</b-nav-item>
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto" v-else>
-        <b-nav-item-dropdown right>
-          <template #button-content>
-            User
-          </template>
-          <b-dropdown-item href="#">Favorites</b-dropdown-item>
-          <b-dropdown-item href="#">Log Out</b-dropdown-item>
-        </b-nav-item-dropdown>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
+    <Navbar />
     <router-view />
   </div>
 </template>
 
 <script>
+import Navbar from "./components/NavBar.vue";
 export default {
+  components:{
+    Navbar
+  },
   name: "App",
-  methods: {
-    Logout() {
-      this.$root.store.logout();
-      this.$root.toast("Logout", "User logged out successfully", "success");
-
-      this.$router.push("/").catch(() => {
-        this.$forceUpdate();
-      });
-    }
-  }
 };
 </script>
 
@@ -53,16 +26,4 @@ export default {
   min-height: 100vh;
 }
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
